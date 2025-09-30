@@ -165,7 +165,7 @@ export default function JobFormModal({
                 placeholder="eg 150,000"
                 value={salaryFrom}
                 onChange={(e) => setSalaryFrom(e.target.value)}
-                className="w-2/6 p-2 border rounded"
+                className="w-1/4 sm:w-2/6 p-2 border rounded"
               />
               <label>--</label>
 
@@ -174,12 +174,12 @@ export default function JobFormModal({
                 placeholder="eg 200,000"
                 value={salaryTo}
                 onChange={(e) => setSalaryTo(e.target.value)}
-                className="w-2/6 p-2 border rounded"
+                className="w-1/4 sm:w-2/6 p-2 border rounded"
               />
               <select
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
-                className="p-2 border rounded w-1/6"
+                className="p-2 border rounded w-1/4 sm:w-1/6"
               >
                 <option value="$">USD ($)</option>
                 <option value="€">EUR (€)</option>
