@@ -71,18 +71,27 @@ export default function AdminDashboard() {
 
   // ===== JOB ACTIONS =====
   const approveJob = async (id: string) => {
-    await api.put(`/admin/jobs/${id}/approve`, {}, { headers: { Authorization: `Bearer ${token}` } });
-    setJobs(jobs.filter((j) => j.id !== id));
+    try {
+      const res = await api.put(`/admin/jobs/${id}/approve`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      if(res.data.status === "APPROVED") {
+        // setJobs(jobs.filter((j) => j.id !== id));
+        fetchJobs(); // Refresh the job list after approval
+      }
+    } catch (error) {
+      console.error("Failed to approve job", error);
+    }
   };
 
   const rejectJob = async (id: string) => {
-    await api.put(`/admin/jobs/${id}/reject`, {}, { headers: { Authorization: `Bearer ${token}` } });
-    setJobs(jobs.filter((j) => j.id !== id));
-  };
-
-  const deleteJob = async (id: string) => {
-    await api.delete(`/jobs/${id}`, { headers: { Authorization: `Bearer ${token}` } });
-    setJobs(jobs.filter((j) => j.id !== id));
+    try {
+      const res = await api.put(`/admin/jobs/${id}/reject`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      if(res.data.status === "REJECTED"){
+        // setJobs(jobs.filter((j) => j.id !== id));
+        fetchJobs(); // Refresh the job list after rejection
+      }
+    } catch (error) {
+      console.error("Failed to reject job", error);
+    }
   };
 
   // ===== USER ACTIONS =====
@@ -145,9 +154,6 @@ export default function AdminDashboard() {
                     </button>
                     <button onClick={() => rejectJob(job.id)} className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
                       Reject
-                    </button>
-                    <button onClick={() => deleteJob(job.id)} className="bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600">
-                      Delete
                     </button>
                   </div>
                 </div>
