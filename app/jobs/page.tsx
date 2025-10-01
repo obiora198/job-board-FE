@@ -7,7 +7,6 @@ import Footer from "../components/Footer";
 import JobFilters from "../components/JobFilters";
 import { CiLocationOn, CiClock2, CiCalendar } from "react-icons/ci";
 import { FaRegStar } from "react-icons/fa";
-import { useSearchParams } from "next/navigation";
 
 export type JobType = {
   id: string;
@@ -29,15 +28,12 @@ export default function JobsPage() {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const searchParams = useSearchParams();
-  const keyword = searchParams.get("keyword") || "";
-
-  // Fetch jobs
+  // Fetch jobs from API
   const fetchJobs = async (keyword: string, filters: any) => {
     setLoading(true);
     try {
       const query = new URLSearchParams({
-        keyword,
+        ...(keyword && { keyword }),
         ...(filters.country && { country: filters.country }),
         ...(filters.city && { city: filters.city }),
       } as any).toString();
@@ -51,9 +47,13 @@ export default function JobsPage() {
     }
   };
 
+  // Initial fetch: read keyword from URL query (CSR only)
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const keyword = params.get("keyword") || "";
+    setSearchTerm(keyword);
     fetchJobs(keyword, filters);
-  }, [keyword, filters]);
+  }, [filters]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -64,9 +64,12 @@ export default function JobsPage() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
+            // Update URL without reload
+            const newUrl = `/jobs?keyword=${encodeURIComponent(searchTerm)}`;
+            window.history.pushState(null, "", newUrl);
             fetchJobs(searchTerm, filters);
           }}
-          className="mb-4 flex space-x-2"
+          className="mb-4 flex flex-col sm:flex-row gap-2"
         >
           <input
             type="text"
